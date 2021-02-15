@@ -10,6 +10,7 @@ from scipy import signal
 def newNote(freq, amp, rate, phase, tailles):
     taille = np.arange(tailles, dtype = float)/rate
     note = amp*np.sin(2*np.pi*freq*taille+phase)
+    return note
 
 def wave_reading():
     fe, data = wave.read('note_guitare_LAd.wav')
@@ -81,13 +82,13 @@ def main():
         Freq_Harm.append(data_fft_ang[y])
 
     Freq0 = axeFreq[data_sin32[0]]
-    Freq1 = np.power(2.0 / 12) * Freq_Harm
+    Freq1 = np.power(2, 0 / 12) * Freq_Harm
 
     newSin = np.zeros(len(enveloppe))
     for z in range(0, 32):
         newSin += newNote(Freq1[y], Freq_amp[y], enveloppe.size, Freq_phase[y])
 
-    LA = newSin * enveloppe
+    LAD = newSin * enveloppe
 
 
     plt.figure()
