@@ -78,15 +78,24 @@ def main():
 
     for y in data_sin32:
         Freq_amp.append(data_fft_abs[y])
-        Freq_phase.append(axeFreq[y])
-        Freq_Harm.append(data_fft_ang[y])
+        Freq_phase.append(data_fft_ang[y])
+        Freq_Harm.append(axeFreq[y])
 
     Freq0 = axeFreq[data_sin32[0]]
-    Freq1 = np.power(2, 0 / 12) * Freq_Harm
+    #LaD = 1*Freq_Harm
+    Sol = np.power(2.0, -3.0 / 12) * Freq_Harm
+
+    SolHarm = []
+    SolPhase = []
+    SolAmp = []
+    for z in Freq_Harm:
+        SolHarm.append()
+
+
 
     newSin = np.zeros(len(enveloppe))
     for z in range(0, 32):
-        newSin += newNote(Freq1[y], Freq_amp[y], enveloppe.size, Freq_phase[y])
+        newSin += newNote(Sol[y], Freq_amp[y], enveloppe.size, Freq_phase[y])
 
     LAD = newSin * enveloppe
 
