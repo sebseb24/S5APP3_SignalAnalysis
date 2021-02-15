@@ -37,14 +37,9 @@ if __name__ == '__main__':
 
     sig = []
 
-    # soundGenerator.generate_sinewave(sig)
-    # soundGenerator.generate_silence(sig)
-    # soundGenerator.generate_sinewave(sig)
-    # soundGenerator.generate_silence(sig)
-    # soundGenerator.generate_sinewave(sig)
     soundGenerator.playSong(sig)
     fileManager.writeWavFile(sig, "wavOut.wav")
 
-    plt.show()
+    # plt.show()
 
     exit(1)
