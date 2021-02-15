@@ -13,40 +13,56 @@ def wave_reading():
 
 
 def main():
-    f = 466
     fe, data = wave_reading()
-    data = np.array(data)
     n = data.size
     N = n
     t = 1.0 * n / fe
     te = 1.0 / fe
-    xm = []
+    t2 = np.arange(-n / 2, n / 2, 1)
+    omega_b = (t2/N)*fe
 
     time = np.zeros(n)
-    for k in range (n):
+    for k in range(n):
         time[k] = te*k
 
-    #eveloppe avec hilbert
-    data_env = signal.hilbert(data)
-    data_abs = np.abs(data_env)
-
     #fentre de hanning pour la moustache
-    hanning = np.hanning(N)
-    data_hanning = data*hanning
-    data_fft = np.fft.fft(data_hanning, N)
+    #hanning = np.hanning(N)
+    #data_hanning = data*hanning
+    data_fft = np.fft.fft(data, N)
     data_fft_abs = np.abs(data_fft)
 
-    # omega _ pour l'Axe en frequence normalisé
-    t1 = np.arange(0.0, n, 1)
-    # boucle pour le omega (axe x) pour b)
-    for x in t1:
-        xm.append(2 * np.pi * x / fe)
+    # concaténation des data 0 à 80 k centré a 0
+    FreqLog = 20 * np.log10(data_fft_abs[:80000])
 
-    # concaténation des data -80k à 80 k centré a 0
-    t2 = np.arange(-n / 2, n / 2, 1)
-    FreqLog = 20 * np.log10(data_fft_abs)
-    flipData = np.concatenate((FreqLog[80000:], FreqLog[:80000]))
+    # 32 harmonique
+    data_sin32,_ = signal.find_peaks(FreqLog, distance=1735, prominence= 17)
 
+    data_amp = np.abs(FreqLog[data_sin32])
+
+    sin = 0
+    for x in range(0,32):
+        sin += data_sin32[x]
+
+    plt.figure()
+    #plt.stem(np.abs())
+
+    #filtre passe bas
+    ohm_bar = np.pi / 1000
+
+    # for N1 in range(1, 885):
+    #     n1 = np.arange(0, N1-1, 1)
+    #     passeBas = np.abs((1/N1)*np.sum(np.exp(-1j*(n1*ohm_bar))))
+    #     print(N1, passeBas)
+
+    N1 = 884  # trouver grace a la boucle for
+    #n1 = np.arange(0, N1-1, 1)
+    #passeBas = np.abs((1 / N1) * np.sum(np.exp(-1j * (n1 * ohm_bar))))
+    hk = []
+
+    for temp in range(0, N1):
+        hk.append(1/N1)
+
+    enveloppe = signal.fftconvolve(np.abs(data), hk)
 
 
     plt.figure()
@@ -56,20 +72,14 @@ def main():
     plt.title('Spectre des amplitudes Fourier (LA#)')
 
     plt.figure()
-    plt.plot(t2, flipData)
-    plt.title('TFD(LA#) Fenetre Hanning')
+    plt.plot(omega_b[80000:],FreqLog)
+    plt.title('Sinusoidal principal')
 
     plt.figure()
-    plt.plot(xm, data_abs)
-    plt.title('Enveloppe')
+    plt.plot(enveloppe)
+    plt.title('Enveloppe filtré')
 
     plt.show()
-
-    print(n)
-    print(t)
-    print(te)
-    print(fe)
-    print(time)
 
 
 if __name__ == "__main__":
