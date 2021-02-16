@@ -25,6 +25,19 @@ def newNote(freq, amp, rate, phase, tailles):
 #     scaled = np.int16(note / np.max(np.abs(note)) * 32767)
 #     wave.write(name, rate, scaled)
 
+def affichage(title, xlabel, ylabel, data1, data2):
+    plt.figure()
+    plt.plot(data1, data2)
+    plt.ylabel(ylabel)
+    plt.xlabel(xlabel)
+    plt.title(title)
+
+def affichage1(title, xlabel, ylabel, data1):
+    plt.figure()
+    plt.plot(data1)
+    plt.ylabel(ylabel)
+    plt.xlabel(xlabel)
+    plt.title(title)
 
 def main():
     fe, data = fileManager.waveRead("note_guitare_LAd.wav")
@@ -73,10 +86,6 @@ def main():
 
     # 32 harmonique
     data_sin32, _ = signal.find_peaks(FreqLog, distance=1735, prominence=17)
-
-    sin = 0
-    for x in range(0, 32):
-        sin += data_sin32[x]
 
     axeFreq = (t3 * fe) / N
 
@@ -138,19 +147,9 @@ def main():
     # plt.plot(time[:480000], song)
     plt.title('La Diese')
 
-    plt.figure()
-    plt.plot(time, data)
-    plt.ylabel('Amplitude')
-    plt.xlabel('Temps (s)')
-    plt.title('Spectre des amplitudes Fourier (LA#)')
-
-    plt.figure()
-    plt.plot(omega_b[80000:], FreqLog)
-    plt.title('Sinusoidal principal')
-
-    plt.figure()
-    plt.plot(enveloppe)
-    plt.title('Enveloppe filtré')
+    affichage('Spectre des amplitudes Fourier (LA#)', 'Temps (s)', 'Amplitude', time, data)
+    affichage('Peaks (sinus principal)', 'Fréquence (Hz)', 'Amplitude db', omega_b[80000:], FreqLog)
+    affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
 
     plt.show()
 
