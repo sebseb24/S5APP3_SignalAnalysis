@@ -17,8 +17,22 @@ def newNote(freq, amp, rate, phase, tailles):
     return note
 
 
-def extractionParametres():
-    # Initialisation des variables
+def affichage(title, xlabel, ylabel, data1, data2):
+    plt.figure()
+    plt.plot(data1, data2)
+    plt.ylabel(ylabel)
+    plt.xlabel(xlabel)
+    plt.title(title)
+
+def affichage1(title, xlabel, ylabel, data1):
+    plt.figure()
+    plt.plot(data1)
+    plt.ylabel(ylabel)
+    plt.xlabel(xlabel)
+    plt.title(title)
+
+def main():
+    # Extraction des parametres
     fe, data = fileManager.waveRead("note_guitare_LAd.wav")
     n = data.size
     N = n
@@ -143,5 +157,12 @@ def extractionParametres():
     plt.figure()
     plt.plot(enveloppe)
     plt.title('Enveloppe filtré')
+    plt.figure()
+    # plt.plot(time[:480000], song)
+    plt.title('La Diese')
+
+    affichage('Spectre des amplitudes Fourier (LA#)', 'Temps (s)', 'Amplitude', time, data)
+    affichage('Peaks (sinus principal)', 'Fréquence (Hz)', 'Amplitude db', omega_b[80000:], FreqLog)
+    affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
 
     plt.show()
