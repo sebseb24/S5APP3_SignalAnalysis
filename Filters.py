@@ -163,7 +163,6 @@ def extractionParametres(graphicsOn=False):
         affichage('Spectre des amplitudes Fourier (LA#)', 'Temps (s)', 'Amplitude', timeLA, dataLA)
         affichage('Peaks (sinus principal)', 'Fréquence (Hz)', 'Amplitude db', omega_b_LA[80000:], FreqLog_LA)
         affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
-        affichage('Peaks (sinus principal) LA# synthétisé', 'Fréquence (Hz)', 'Amplitude (db)', omega_b_LA_Synt[80441:],
-                  FreqLog_LA_Synt)
-
-        plt.show()
+        affichage('Peaks (sinus principal) LA# synthétisé', 'Fréquence (Hz)', 'Amplitude (db)', omega_b_LA_Synt[80441:], FreqLog_LA_Synt)
+        affichage("Reponse en frequence du filtre RIF passe-bas", "Frequence (rad/ech)", "Amplitude (dB)", w, 20 * np.log10(abs(h)))
+    plt.show()
