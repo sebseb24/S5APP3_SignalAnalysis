@@ -8,9 +8,9 @@ import BassonFilter as bassonFilter
 
 if __name__ == '__main__':
     # Extraction des parametres de la note de guitare et construction d'une chanson avec les sons synthetique
-    filters.extractionParametres(False)
+    filters.extractionParametres(True)
 
     # Filtrage de la note de basson
-    bassonFilter.filtrageBasson(False)
+    # bassonFilter.filtrageBasson(False)
 
     exit(1)

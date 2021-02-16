@@ -64,18 +64,21 @@ def extractionParametres(graphicsOn=False):
     # concaténation des donnees 0 à 80 k centré a 0
     FreqLog_LA = 20 * np.log10(LAfft_abs[:80000])
 
-    ############### Est ce qu'on garde ca ? ###############################
+    # Algorithme pour choisir l'ordre N du filtre RIF passe-bas
     # filtre passe bas
     # ohm_bar = np.pi / 1000
     # for N1 in range(1, 885):
     #     n1 = np.arange(0, N1-1, 1)
-    #     passeBas = np.abs((1/N1)*np.sum(np.exp(-1j*(n1*ohm_bar))))
+    #     passeBas = np.abs((1/N1)*(np.exp(-1j*(n1*ohm_bar))))
     #     print(N1, passeBas)
 
-    # Algorithme pour choisir l'ordre N du filtre RIF passe-bas
-    N1 = 884  # trouver grace a la boucle for
-    # n1 = np.arange(0, N1-1, 1)
-    # passeBas = np.abs((1 / N1) * np.sum(np.exp(-1j * (n1 * ohm_bar))))
+    N1 = 884
+    n1 = np.arange(0, N1-1, 1)
+    ohm_bar = np.pi / 1000
+    passeBas = np.abs((1 / N1) * (np.exp(-1j * (n1 * ohm_bar))))
+    w, h = signal.freqz(passeBas)
+
+    affichage("Reponse en frequence du filtre RIF passe-bas", "Frequence (rad/ech)", "Amplitude (dB)", w, 20 * np.log10(abs(h)))
 
     # Creation de l'enveloppe
     hk = []
@@ -146,7 +149,7 @@ def extractionParametres(graphicsOn=False):
     # soundGenerator.waveWriteIndividualsNotes(fe, Re, ReD, Mi, Fa, Sol, LaD)
 
     #Spectre LA# synthétisé
-    feLA_Synt, dataLA_Synt = fileManager.waveRead('LAd.wav')
+    feLA_Synt, dataLA_Synt = fileManager.waveRead('LAd.wav', "out")
     nLA_Synt = dataLA_Synt.size
     NLA_Synt = nLA_Synt
     t2_LA_Synt = np.arange(-nLA_Synt / 2, nLA_Synt / 2, 1)
