@@ -2,15 +2,14 @@
 import Filters as filters
 import BassonFilter as bassonFilter
 
-# En mettant les parametres boolean a true, on active l'affichage des graphiques
-# L'affichage des graphique est bloquant, donc si la premiere fonction affiche ses graphiques,
-# la deuxieme fonction ne s'execute pas
+# Mettre les parametres boolean a True pour voir les graphiques,
+# un a la fois, sinon le premier empeche la generation des graphiques du prochain
 
 if __name__ == '__main__':
     # Extraction des parametres de la note de guitare et construction d'une chanson avec les sons synthetique
-    filters.extractionParametres(True)
+    filters.extractionParametres(False)
 
     # Filtrage de la note de basson
-    # bassonFilter.filtrageBasson(False)
+    bassonFilter.filtrageBasson(False)
 
     exit(1)

@@ -58,7 +58,7 @@ def generateSong(notes, beginning, tempo, fe, songChoice):
                 song.append(noteFreqs[note[0]][j])
 
     # Creation du fichier wav
-    fileManager.waveWrite('song.wav', fe, song)
+    fileManager.waveWrite('cinquiemeSymphonie.wav', fe, song)
 
 
 # Permet d'enregistrer les notes individuelles dans un fichier wav

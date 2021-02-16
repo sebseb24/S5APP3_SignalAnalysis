@@ -41,7 +41,7 @@ def affichage1(title, xlabel, ylabel, data1):
 def filtrageBasson(graphicsOn=False):
     # lecture du fichier .wav d'origine
     rateBasson, dataBasson = fileManager.waveRead('note_basson_plus_sinus_1000_Hz.wav')
-    rateNewBasson, dataNewBasson = fileManager.waveRead('newBasson.wav', "out")
+    rateNewBasson, dataNewBasson = fileManager.waveRead('bassonFiltre.wav', "out")
 
     # initialisation des variable
     N = 6000

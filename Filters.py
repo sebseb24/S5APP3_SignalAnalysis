@@ -76,9 +76,7 @@ def extractionParametres(graphicsOn=False):
     n1 = np.arange(0, N1 - 1, 1)
     ohm_bar = np.pi / 1000
     passeBas = np.abs((1 / N1) * (np.exp(-1j * (n1 * ohm_bar))))
-    w, h = signal.freqz(passeBas)
-
-    affichage("Reponse en frequence du filtre RIF passe-bas", "Frequence (rad/ech)", "Amplitude (dB)", w, 20 * np.log10(abs(h)))
+    w0, h0 = signal.freqz(passeBas)
 
     # Creation de l'enveloppe
     hk = []
@@ -164,5 +162,5 @@ def extractionParametres(graphicsOn=False):
         affichage('Peaks (sinus principal)', 'Fréquence (Hz)', 'Amplitude db', omega_b_LA[80000:], FreqLog_LA)
         affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
         affichage('Peaks (sinus principal) LA# synthétisé', 'Fréquence (Hz)', 'Amplitude (db)', omega_b_LA_Synt[80441:], FreqLog_LA_Synt)
-        affichage("Reponse en frequence du filtre RIF passe-bas", "Frequence (rad/ech)", "Amplitude (dB)", w, 20 * np.log10(abs(h)))
+        affichage("Reponse en frequence du filtre RIF passe-bas", "Frequence (rad/ech)", "Amplitude (dB)", w0, 20 * np.log10(abs(h0)))
     plt.show()
