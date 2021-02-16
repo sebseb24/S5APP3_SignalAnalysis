@@ -36,7 +36,7 @@ def affichage1(title, xlabel, ylabel, data1):
     plt.title(title)
 
 
-def main():
+def filtrageBasson(graphicsOn=False):
     # lecture du fichier .wav d'origine
     rateBasson, dataBasson = fileManager.waveRead('note_basson_plus_sinus_1000_Hz.wav')
     rateNewBasson, dataNewBasson = fileManager.waveRead('newBasson.wav', "out")
@@ -102,21 +102,18 @@ def main():
     # # Frequence en log des data 0 à 76524
     FreqLog1 = 20 * np.log10(NewBassonfft[:76524])
 
-    affichage('Spectre des amplitudes Fourier (Basson non filtré)', 'Temps (s)', 'Amplitude', timeBasson, dataBasson)
-    affichage('Peaks (sinus principal) non filtré', 'Fréquences (Hz)', 'Amplitude (db)', omega_b_Basson[67526:],
-              FreqLog)
-    affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
-    affichage1('Filtre coupe-bande réponse en fréquence', 'Nombre d''échantillon', 'Amplitude', hk)  # ajout de la phase
-    affichage('Spectre des amplitudes Fourier (Basson filtré)', 'Temps (s)', 'Amplitude', timeNewBasson,
-              basson)  # faire la moustache synthétise
-    affichage('Peaks (sinus principal) filtré', 'Fréquences (Hz)', 'Amplitude (db)', omega_b_NewBasson[76524:],
-              FreqLog1)
+    if graphicsOn:
+        affichage('Spectre des amplitudes Fourier (Basson non filtré)', 'Temps (s)', 'Amplitude', timeBasson, dataBasson)
+        affichage('Peaks (sinus principal) non filtré', 'Fréquences (Hz)', 'Amplitude (db)', omega_b_Basson[67526:],
+                  FreqLog)
+        affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
+        affichage1('Filtre coupe-bande réponse en fréquence', 'Nombre d''échantillon', 'Amplitude', hk)  # ajout de la phase
+        affichage('Spectre des amplitudes Fourier (Basson filtré)', 'Temps (s)', 'Amplitude', timeNewBasson,
+                  basson)  # faire la moustache synthétise
+        affichage('Peaks (sinus principal) filtré', 'Fréquences (Hz)', 'Amplitude (db)', omega_b_NewBasson[76524:],
+                  FreqLog1)
 
-    # tracer reponse impulsionnel
-    # tracer reponse sin 100-Hz
+        # tracer reponse impulsionnel
+        # tracer reponse sin 100-Hz
 
-    plt.show()
-
-
-if __name__ == '__main__':
-    main()
+        plt.show()

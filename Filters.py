@@ -1,9 +1,5 @@
-import sys
-import math
-from math import sin, pi
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.io.wavfile as wave
 from scipy import signal
 
 import SoundGenerator as soundGenerator
@@ -24,6 +20,7 @@ def affichage(title, xlabel, ylabel, data1, data2):
     plt.xlabel(xlabel)
     plt.title(title)
 
+
 def affichage1(title, xlabel, ylabel, data1):
     plt.figure()
     plt.plot(data1)
@@ -31,7 +28,8 @@ def affichage1(title, xlabel, ylabel, data1):
     plt.xlabel(xlabel)
     plt.title(title)
 
-def main():
+
+def extractionParametres(graphicsOn=False):
     # Extraction des parametres
     fe, data = fileManager.waveRead("note_guitare_LAd.wav")
     n = data.size
@@ -135,8 +133,8 @@ def main():
     # Generation de la chanson a partir du signal synthetique et enregistrement dans un fichier wav, avec choix des
     # parametres
     notes = [Re, ReD, Mi, Fa, Sol, LaD]
-    beginning = 8500    # Debut de la trame > 0 pour attenuer l'attaque
-    tempo = 23000   # Nombre de trames qui constitues la longueur d'un temps
+    beginning = 8500  # Debut de la trame > 0 pour attenuer l'attaque
+    tempo = 23000  # Nombre de trames qui constitues la longueur d'un temps
 
     soundGenerator.generateSong(notes, beginning, tempo, fe, soundGenerator.getSongChoice("cinquiemeSymphonie"))
 
@@ -144,25 +142,9 @@ def main():
     # soundGenerator.waveWriteIndividualsNotes(fe, Re, ReD, Mi, Fa, Sol, LaD)
 
     # Affichage des graphiques
-    plt.figure()
-    plt.plot(time, data)
-    plt.ylabel('Amplitude')
-    plt.xlabel('Temps (s)')
-    plt.title('Spectre des amplitudes Fourier (LA#)')
+    if graphicsOn:
+        affichage('Spectre des amplitudes Fourier (LA#)', 'Temps (s)', 'Amplitude', time, data)
+        affichage('Peaks (sinus principal)', 'Fréquence (Hz)', 'Amplitude db', omega_b[80000:], FreqLog)
+        affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
 
-    plt.figure()
-    plt.plot(omega_b[80000:], FreqLog)
-    plt.title('Sinusoidal principal')
-
-    plt.figure()
-    plt.plot(enveloppe)
-    plt.title('Enveloppe filtré')
-    plt.figure()
-    # plt.plot(time[:480000], song)
-    plt.title('La Diese')
-
-    affichage('Spectre des amplitudes Fourier (LA#)', 'Temps (s)', 'Amplitude', time, data)
-    affichage('Peaks (sinus principal)', 'Fréquence (Hz)', 'Amplitude db', omega_b[80000:], FreqLog)
-    affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
-
-    plt.show()
+        plt.show()
