@@ -123,11 +123,15 @@ def main():
     Sol = newSinSol * enveloppe
     LaD = newSinLad * enveloppe
 
+    # Generation de la chanson a partir du signal synthetique et enregistrement dans un fichier wav, avec choix des
+    # parametres
     notes = [Re, ReD, Mi, Fa, Sol, LaD]
-    beginning = 8500
-    tempo = 23000
+    beginning = 8500    # Debut de la trame > 0 pour attenuer l'attaque
+    tempo = 23000   # Nombre de trames qui constitues la longueur d'un temps
 
-    soundGenerator.generateSong(notes, beginning, tempo, fe)
+    soundGenerator.generateSong(notes, beginning, tempo, fe, soundGenerator.getSongChoice("cinquiemeSymphonie"))
+
+    # Fonction qui permet d'enregistrer les notes individuelles dans un fichier wav
     # soundGenerator.waveWriteIndividualsNotes(fe, Re, ReD, Mi, Fa, Sol, LaD)
 
     plt.figure()

@@ -12,14 +12,15 @@ import scipy.io.wavfile as wave
 #     return wave.open('Sounds/note_basson_plus_sinus_1000_Hz.wav')
 #
 
+# Lecture des fichiers wav entrants
 def waveRead(filename):
     return wave.read('SoundsIn/' + filename)
 
 
+# Creation et ecriture dans un fichier wav
 def waveWrite(filename, rate, note):
     scaled = np.int16(note / np.max(np.abs(note)) * 32767)
     wave.write('SoundsOut/' + filename, rate, scaled)
-
 
 # https://stackoverflow.com/questions/33879523/python-how-can-i-generate-a-wav-file-with-beeps
 # def writeWavFile(sig, filename):
