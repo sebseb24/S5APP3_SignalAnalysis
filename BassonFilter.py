@@ -15,7 +15,9 @@ def time(teBasson, nBasson):
 
 
 def fft(dataBasson, nBasson):
-    fft = np.fft.fft(dataBasson, nBasson)
+    han = np.hanning(nBasson)
+    fft = han*dataBasson
+    fft = np.fft.fft(fft, nBasson)
     fft = np.abs(fft)
     return fft
 
@@ -43,11 +45,11 @@ def filtrageBasson(graphicsOn=False):
 
     # initialisation des variable
     N = 6000
-    fe = N
+    fe = rateBasson
     nBasson = dataBasson.size
     nNewBasson = dataNewBasson.size
-    w0 = 2 * np.pi * 960 / 6000
-    w1 = 2 * np.pi * 1040 / 6000
+    w0 = 2*np.pi*1000/rateBasson
+    w1 = 2*np.pi*40/rateBasson
 
     f = (w1 / (2 * np.pi)) * fe
     K = (f / fe) * N * 2 + 1
@@ -57,9 +59,7 @@ def filtrageBasson(graphicsOn=False):
     teBasson = 1.0 / rateBasson
     teNewBasson = 1.0 / rateNewBasson
     tBasson = np.arange(-nBasson / 2, nBasson / 2, 1)
-    tNewBasson = np.arange(-nNewBasson / 2, nNewBasson / 2, 1)
     omega_b_Basson = (tBasson / nBasson) * rateBasson
-    omega_b_NewBasson = (tNewBasson / nNewBasson) * rateNewBasson
 
     timeBasson = time(teBasson, nBasson)
 
@@ -97,21 +97,44 @@ def filtrageBasson(graphicsOn=False):
     # wave_writing(rateBasson, basson)
     fileManager.waveWrite("newBasson.wav", rateBasson, basson)
 
-    NewBassonfft = fft(basson, nNewBasson)
 
-    # # Frequence en log des data 0 à 76524
-    FreqLog1 = 20 * np.log10(NewBassonfft[:76524])
+    #  Reponse impulsionnel
+    cb1, cb_1 = signal.freqz(yn)
 
     if graphicsOn:
         affichage('Spectre des amplitudes Fourier (Basson non filtré)', 'Temps (s)', 'Amplitude', timeBasson, dataBasson)
-        affichage('Peaks (sinus principal) non filtré', 'Fréquences (Hz)', 'Amplitude (db)', omega_b_Basson[67526:],
-                  FreqLog)
-        affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
-        affichage1('Filtre coupe-bande réponse en fréquence', 'Nombre d''échantillon', 'Amplitude', hk)  # ajout de la phase
-        affichage('Spectre des amplitudes Fourier (Basson filtré)', 'Temps (s)', 'Amplitude', timeNewBasson,
-                  basson)
+        affichage('Peaks (sinus principal) non filtré Basson', 'Fréquences (Hz)', 'Amplitude (db)', omega_b_Basson[67526:], FreqLog)
+        affichage1('Enveloppe filtré Basson', 'Nombre d''échantillon', 'Amplitude', enveloppe)
+        affichage('Spectre des amplitudes Fourier (Basson filtré)', 'Temps (s)', 'Amplitude', timeNewBasson, basson)
 
-        # tracer reponse impulsionnel
-        # tracer reponse sin 100-Hz
+        affichage('Réponse impulsionnel du filtre coupe bande (h[n])', 'Nombre d''échantillon ', 'Amplitude', n, h_n)
+
+        plt.figure()
+        plt.plot(timeBasson, dataBasson, 'b', label='Signal original')
+        plt.plot(timeNewBasson, basson, 'r', label='Signal filtré')
+        plt.legend()
+        plt.ylabel('Amplitude')
+        plt.xlabel('Temps (s)')
+        plt.title('Spectre des amplitudes Fourier Basson')
+
+        plt.figure()
+        plt.plot(timeBasson[:1750], dataBasson[:1750], 'b', label='Signal original')
+        plt.plot(timeNewBasson[:1750], basson[:1750], 'r', label='Signal filtré')
+        plt.legend()
+        plt.ylabel('Amplitude')
+        plt.xlabel('Temps (s)')
+        plt.title('Réponse du sinus de 1000Hz dans le filtre coupe bande')
+
+        fig, ax1 = plt.subplots()
+        ax1.set_title('Réponse en fréquence du coupe bande du basson')
+        ax1.plot(cb1, 20 * np.log10(abs(cb_1)), 'b')
+        ax1.set_ylabel('Amplitude [dB]', color='b')
+        ax1.set_xlabel('Fréquences (rad/échantillon)')
+
+        ax2 = ax1.twinx()
+        angles = np.unwrap(np.angle(cb_1))
+        ax2.plot(cb1, angles, 'g')
+        ax2.set_ylabel('Angle (radians)', color='g')
+        ax2.grid()
 
         plt.show()
