@@ -126,17 +126,17 @@ def main():
     LAd = newSinLad * enveloppe
 
     beginning = 8500
-    tempo = 25000
+    tempo = 23000
 
     noteFreqs = {
         "C4": 261.60,
         "C#4": 277.20,
-        "D4": Re[beginning:beginning+tempo],
-        "D#4": ReD[beginning:beginning+tempo],
-        "E4": Mi[beginning:beginning+tempo],
-        "F4": Fa[beginning:beginning+tempo],
+        "D4": Re[beginning:],
+        "D#4": ReD[beginning:],
+        "E4": Mi[beginning:],
+        "F4": Fa[beginning:],
         "F#4": 370.00,
-        "G4": Sol[beginning:beginning+tempo],
+        "G4": Sol[beginning:],
         "G#4": 415.30,
         "A4": 440.00,
         "A#4": 466.20,
@@ -144,32 +144,26 @@ def main():
     }
 
     noteBeats = {
-        "whole": 2000,
-        "half": 1000,
-        "quarter": 500,
-        "eigth": 250
+        "whole": 2*tempo,
+        "half": tempo,
+        "quarter": tempo/2,
+        "eigth": tempo/4
     }
 
-    # cinquiemeSymphonie = ["G4", "G4", "G4", "D#4", "D#4", "D#4", "F4", "F4", "F4", "D4", "D4", "D4"]
-    cinquiemeSymphonie = ["G4", "G4", "G4", "D#4", "silence", "silence", "F4", "F4", "F4", "D4"]
+    cinquiemeSymphonie = [("G4", "half"), ("G4", "half"), ("G4", "half"), ("D#4", "whole"),
+                            ("silence", "half"), ("F4", "half"), ("F4", "half"), ("F4", "half"), ("D4", "whole")]
 
     song = []
-    # for k in range(25):
-    #     for i in range(len(track_test)): # pas ici
-    #         note = track_test[i]
-    #         for j in range(len(noteFreqs[note])):
-    #             song.append(noteFreqs[note][j])
-
     for i in range(len(cinquiemeSymphonie)):
         note = cinquiemeSymphonie[i]
-        if note == "silence":
-            for j in range(tempo):
+        length = noteBeats[note[1]]
+
+        if note[0] == "silence":
+            for j in range(int(length)):
                 song.append(0)
         else:
-            for j in range(len(noteFreqs[note])):
-                song.append(noteFreqs[note][j])
-
-    print(song)
+            for j in range(int(length)):
+                song.append(noteFreqs[note[0]][j])
 
     wave_write('song.wav', fe, song)
 
