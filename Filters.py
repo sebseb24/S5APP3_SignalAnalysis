@@ -6,25 +6,28 @@ import matplotlib.pyplot as plt
 import scipy.io.wavfile as wave
 from scipy import signal
 
+import SoundGenerator as soundGenerator
+import FileManager as fileManager
+
 
 def newNote(freq, amp, rate, phase, tailles):
     taille = np.arange(tailles, dtype=float) / rate
     note = amp * np.sin(2 * np.pi * freq * taille + phase)
     return note
 
-
-def wave_reading():
-    fe, data = wave.read('Sounds/note_guitare_LAd.wav')
-    return fe, data
-
-
-def wave_write(name, rate, note):
-    scaled = np.int16(note / np.max(np.abs(note)) * 32767)
-    wave.write(name, rate, scaled)
+#
+# def wave_reading():
+#     fe, data = wave.read('Sounds/note_guitare_LAd.wav')
+#     return fe, data
+#
+#
+# def wave_write(name, rate, note):
+#     scaled = np.int16(note / np.max(np.abs(note)) * 32767)
+#     wave.write(name, rate, scaled)
 
 
 def main():
-    fe, data = wave_reading()
+    fe, data = fileManager.waveRead("note_guitare_LAd.wav")
     n = data.size
     N = n
     t = 1.0 * n / fe
@@ -91,10 +94,6 @@ def main():
     SolHarm = []
     LadHarm = 1 * Freq_Harm
 
-
-
-
-
     for z in Freq_Harm:
         ReHarm.append(z * np.power(2.0, -8.0 / 12))
         ReDHarm.append(z * np.power(2.0, -7.0 / 12))
@@ -109,7 +108,6 @@ def main():
     newSinLad = np.zeros(len(enveloppe))
     newSinSol = np.zeros(len(enveloppe))
 
-
     for w in range(0, 32):
         newSinRe += newNote(ReHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
         newSinReD += newNote(ReDHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
@@ -123,55 +121,14 @@ def main():
     Mi = newSinMi * enveloppe
     Fa = newSinFa * enveloppe
     Sol = newSinSol * enveloppe
-    LAd = newSinLad * enveloppe
+    LaD = newSinLad * enveloppe
 
+    notes = [Re, ReD, Mi, Fa, Sol, LaD]
     beginning = 8500
     tempo = 23000
 
-    noteFreqs = {
-        "C4": 261.60,
-        "C#4": 277.20,
-        "D4": Re[beginning:],
-        "D#4": ReD[beginning:],
-        "E4": Mi[beginning:],
-        "F4": Fa[beginning:],
-        "F#4": 370.00,
-        "G4": Sol[beginning:],
-        "G#4": 415.30,
-        "A4": 440.00,
-        "A#4": 466.20,
-        "B4": 493.90
-    }
-
-    noteBeats = {
-        "whole": 2*tempo,
-        "half": tempo,
-        "quarter": tempo/2,
-        "eigth": tempo/4
-    }
-
-    cinquiemeSymphonie = [("G4", "half"), ("G4", "half"), ("G4", "half"), ("D#4", "whole"),
-                            ("silence", "half"), ("F4", "half"), ("F4", "half"), ("F4", "half"), ("D4", "whole")]
-
-    song = []
-    for i in range(len(cinquiemeSymphonie)):
-        note = cinquiemeSymphonie[i]
-        length = noteBeats[note[1]]
-
-        if note[0] == "silence":
-            for j in range(int(length)):
-                song.append(0)
-        else:
-            for j in range(int(length)):
-                song.append(noteFreqs[note[0]][j])
-
-    wave_write('song.wav', fe, song)
-
-    # wave_write('LAd.wav', fe, LAd)
-    # wave_write('Sol.wav', fe, Sol)
-    # wave_write('Mi.wav', fe, Mi)
-    # wave_write('Fa.wav', fe, Fa)
-    # wave_write('Re.wav', fe, Re)
+    soundGenerator.generateSong(notes, beginning, tempo, fe)
+    # soundGenerator.waveWriteIndividualsNotes(fe, Re, ReD, Mi, Fa, Sol, LaD)
 
     plt.figure()
     # plt.plot(time[:480000], song)
