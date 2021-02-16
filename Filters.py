@@ -18,7 +18,7 @@ def wave_reading():
 
 def wave_write(name, rate, note):
     scaled = np.int16(note / np.max(np.abs(note)) * 32767)
-    wave.write('lad.wav', rate, scaled)
+    wave.write(name, rate, scaled)
 
 def main():
     fe, data = wave_reading()
@@ -68,8 +68,6 @@ def main():
     # 32 harmonique
     data_sin32,_ = signal.find_peaks(FreqLog, distance=1735, prominence= 17)
 
-    data_amp = np.abs(FreqLog[data_sin32])
-
     sin = 0
     for x in range(0,32):
         sin += data_sin32[x]
@@ -82,22 +80,43 @@ def main():
         Freq_Harm.append(axeFreq[y])
 
     Freq0 = axeFreq[data_sin32[0]]
-    #LaD = 1*Freq_Harm
-    Sol = np.power(2.0, -3.0 / 12) * Freq_Harm
 
+    LadHarm = 1 * Freq_Harm
     SolHarm = []
-    SolPhase = []
-    SolAmp = []
+    MiHarm = []
+    FaHarm = []
+    ReHarm = []
+
     for z in Freq_Harm:
-        SolHarm.append()
+        SolHarm.append(z * np.power(2.0, -3.0 / 12))
+        MiHarm.append(z * np.power(2.0, -6.0 / 12))
+        FaHarm.append(z * np.power(2.0, -5.0 / 12))
+        ReHarm.append(z * np.power(2.0, -8.0 / 12))
 
+    newSinLad = np.zeros(len(enveloppe))
+    newSinSol = np.zeros(len(enveloppe))
+    newSinMi = np.zeros(len(enveloppe))
+    newSinFa = np.zeros(len(enveloppe))
+    newSinRe = np.zeros(len(enveloppe))
 
+    for w in range(0, 32):
+        newSinLad += newNote(LadHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
+        newSinSol += newNote(SolHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
+        newSinMi += newNote(MiHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
+        newSinFa += newNote(FaHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
+        newSinRe += newNote(ReHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
 
-    newSin = np.zeros(len(enveloppe))
-    for z in range(0, 32):
-        newSin += newNote(Sol[y], Freq_amp[y], enveloppe.size, Freq_phase[y])
+    LAd = newSinLad * enveloppe
+    Sol = newSinSol * enveloppe
+    Mi = newSinMi * enveloppe
+    Fa = newSinFa * enveloppe
+    Re = newSinRe * enveloppe
 
-    LAD = newSin * enveloppe
+    wave_write('LAd.wav', fe, LAd)
+    wave_write('Sol.wav', fe, Sol)
+    wave_write('Mi.wav', fe, Mi)
+    wave_write('Fa.wav', fe, Fa)
+    wave_write('Re.wav', fe, Re)
 
 
     plt.figure()
