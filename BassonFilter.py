@@ -109,9 +109,7 @@ def filtrageBasson(graphicsOn=False):
         affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
         affichage1('Filtre coupe-bande réponse en fréquence', 'Nombre d''échantillon', 'Amplitude', hk)  # ajout de la phase
         affichage('Spectre des amplitudes Fourier (Basson filtré)', 'Temps (s)', 'Amplitude', timeNewBasson,
-                  basson)  # faire la moustache synthétise
-        affichage('Peaks (sinus principal) filtré', 'Fréquences (Hz)', 'Amplitude (db)', omega_b_NewBasson[76524:],
-                  FreqLog1)
+                  basson)
 
         # tracer reponse impulsionnel
         # tracer reponse sin 100-Hz

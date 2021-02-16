@@ -12,6 +12,19 @@ def newNote(freq, amp, rate, phase, tailles):
     note = amp * np.sin(2 * np.pi * freq * taille + phase)
     return note
 
+def fft(dataLa, NLa):
+    han = np.hanning(NLa)
+    fft = han*dataLa
+    fft = np.fft.fft(fft, NLa)
+    fft_abs = np.abs(fft)
+    fft_ang = np.angle(fft)
+    return fft_abs, fft_ang
+
+def time(teLA, nLA):
+    time = np.zeros(nLA)
+    for k in range(nLA):
+        time[k] = teLA*k
+    return time
 
 def affichage(title, xlabel, ylabel, data1, data2):
     plt.figure()
@@ -31,32 +44,25 @@ def affichage1(title, xlabel, ylabel, data1):
 
 def extractionParametres(graphicsOn=False):
     # Extraction des parametres
-    fe, data = fileManager.waveRead("note_guitare_LAd.wav")
-    n = data.size
-    N = n
-    t = 1.0 * n / fe
-    te = 1.0 / fe
-    t2 = np.arange(-n / 2, n / 2, 1)
-    t3 = np.arange(0, n, 1, dtype=float)
-    omega_b = (t2 / N) * fe
+    feLA, dataLA = fileManager.waveRead("note_guitare_LAd.wav")
+    nLA = dataLA.size
+    NLA = nLA
+    t = 1.0 * nLA / feLA
+    teFA = 1.0 / feLA
+    t2_LA = np.arange(-nLA / 2, nLA / 2, 1)
+    t3 = np.arange(0, nLA, 1, dtype=float)
+    omega_b_LA = (t2_LA/NLA)*feLA
 
     Freq_amp = []
     Freq_phase = []
     Freq_Harm = []
 
-    time = np.zeros(n)
-    for k in range(n):
-        time[k] = te * k
+    timeLA = time(teFA, nLA)
 
-    # Extraction des parametres du son
-    han = np.hanning(N)
-    data_han = han*data
-    data_fft = np.fft.fft(data_han, N)
-    data_fft_abs = np.abs(data_fft)
-    data_fft_ang = np.angle(data_fft)
+    LAfft_abs, LAfft_ang = fft(dataLA, NLA)
 
     # concaténation des donnees 0 à 80 k centré a 0
-    FreqLog = 20 * np.log10(data_fft_abs[:80000])
+    FreqLog_LA = 20 * np.log10(LAfft_abs[:80000])
 
     ############### Est ce qu'on garde ca ? ###############################
     # filtre passe bas
@@ -76,20 +82,20 @@ def extractionParametres(graphicsOn=False):
     for temp in range(0, N1):
         hk.append(1 / N1)
 
-    enveloppe = signal.fftconvolve(np.abs(data), hk)
+    enveloppe = signal.fftconvolve(np.abs(dataLA), hk)
 
     # Isolation des 32 harmoniques principales du signal
-    data_sin32, _ = signal.find_peaks(FreqLog, distance=1730, prominence=10)
+    data_sin32_LA, _ = signal.find_peaks(FreqLog_LA, distance=1730, prominence=10)
 
     # Extraction des parametres de chaque harmonique
-    axeFreq = (t3 * fe) / N
-    for y in data_sin32:
-        Freq_amp.append(data_fft_abs[y])
-        Freq_phase.append(data_fft_ang[y])
+    axeFreq = (t3 * feLA) / NLA
+    for y in data_sin32_LA:
+        Freq_amp.append(LAfft_abs[y])
+        Freq_phase.append(LAfft_ang[y])
         Freq_Harm.append(axeFreq[y])
 
     # Confirmation de la frequence fondamentale
-    Freq0 = axeFreq[data_sin32[0]]
+    Freq0 = axeFreq[data_sin32_LA[0]]
 
     # Construction synthetique des autres notes a partir du LA diese obtenu
     ReHarm = []
@@ -114,12 +120,12 @@ def extractionParametres(graphicsOn=False):
     newSinSol = np.zeros(len(enveloppe))
 
     for w in range(0, 32):
-        newSinRe += newNote(ReHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
-        newSinReD += newNote(ReDHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
-        newSinMi += newNote(MiHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
-        newSinFa += newNote(FaHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
-        newSinSol += newNote(SolHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
-        newSinLad += newNote(LadHarm[w], Freq_amp[w], fe, Freq_phase[w], enveloppe.size)
+        newSinRe += newNote(ReHarm[w], Freq_amp[w], feLA, Freq_phase[w], enveloppe.size)
+        newSinReD += newNote(ReDHarm[w], Freq_amp[w], feLA, Freq_phase[w], enveloppe.size)
+        newSinMi += newNote(MiHarm[w], Freq_amp[w], feLA, Freq_phase[w], enveloppe.size)
+        newSinFa += newNote(FaHarm[w], Freq_amp[w], feLA, Freq_phase[w], enveloppe.size)
+        newSinSol += newNote(SolHarm[w], Freq_amp[w], feLA, Freq_phase[w], enveloppe.size)
+        newSinLad += newNote(LadHarm[w], Freq_amp[w], feLA, Freq_phase[w], enveloppe.size)
 
     Re = newSinRe * enveloppe
     ReD = newSinReD * enveloppe
@@ -134,15 +140,27 @@ def extractionParametres(graphicsOn=False):
     beginning = 8500  # Debut de la trame > 0 pour attenuer l'attaque
     tempo = 23000  # Nombre de trames qui constitues la longueur d'un temps
 
-    soundGenerator.generateSong(notes, beginning, tempo, fe, soundGenerator.getSongChoice("cinquiemeSymphonie"))
+    soundGenerator.generateSong(notes, beginning, tempo, feLA, soundGenerator.getSongChoice("cinquiemeSymphonie"))
 
     # Fonction qui permet d'enregistrer les notes individuelles dans un fichier wav
     # soundGenerator.waveWriteIndividualsNotes(fe, Re, ReD, Mi, Fa, Sol, LaD)
 
+    #Spectre LA# synthétisé
+    feLA_Synt, dataLA_Synt = fileManager.waveRead('LAd.wav')
+    nLA_Synt = dataLA_Synt.size
+    NLA_Synt = nLA_Synt
+    t2_LA_Synt = np.arange(-nLA_Synt / 2, nLA_Synt / 2, 1)
+    omega_b_LA_Synt = (t2_LA_Synt/NLA_Synt)*feLA_Synt
+    LAfft_abs_Synt, LAfft_ang_Synt = fft(dataLA_Synt, NLA_Synt)
+
+    FreqLog_LA_Synt = 20 * np.log10(LAfft_abs_Synt[:80442])
+
     # Affichage des graphiques
     if graphicsOn:
-        affichage('Spectre des amplitudes Fourier (LA#)', 'Temps (s)', 'Amplitude', time, data)
-        affichage('Peaks (sinus principal)', 'Fréquence (Hz)', 'Amplitude db', omega_b[80000:], FreqLog)
+        affichage('Spectre des amplitudes Fourier (LA#)', 'Temps (s)', 'Amplitude', timeLA, dataLA)
+        affichage('Peaks (sinus principal)', 'Fréquence (Hz)', 'Amplitude db', omega_b_LA[80000:], FreqLog_LA)
         affichage1('Enveloppe filtré', 'Nombre d''échantillon', 'Amplitude', enveloppe)
+        affichage('Peaks (sinus principal) LA# synthétisé', 'Fréquence (Hz)', 'Amplitude (db)', omega_b_LA_Synt[80441:],
+                  FreqLog_LA_Synt)
 
         plt.show()
