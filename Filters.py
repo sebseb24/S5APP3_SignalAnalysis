@@ -73,7 +73,7 @@ def extractionParametres(graphicsOn=False):
     #     print(N1, passeBas)
 
     N1 = 884
-    n1 = np.arange(0, N1-1, 1)
+    n1 = np.arange(0, N1 - 1, 1)
     ohm_bar = np.pi / 1000
     passeBas = np.abs((1 / N1) * (np.exp(-1j * (n1 * ohm_bar))))
     w, h = signal.freqz(passeBas)
