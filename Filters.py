@@ -49,7 +49,9 @@ def extractionParametres(graphicsOn=False):
         time[k] = te * k
 
     # Extraction des parametres du son
-    data_fft = np.fft.fft(data, N)
+    han = np.hanning(N)
+    data_han = han*data
+    data_fft = np.fft.fft(data_han, N)
     data_fft_abs = np.abs(data_fft)
     data_fft_ang = np.angle(data_fft)
 
@@ -77,11 +79,7 @@ def extractionParametres(graphicsOn=False):
     enveloppe = signal.fftconvolve(np.abs(data), hk)
 
     # Isolation des 32 harmoniques principales du signal
-    data_sin32, _ = signal.find_peaks(FreqLog, distance=1735, prominence=17)
-
-    # sin = 0
-    # for x in range(0, 32):
-    #     sin += data_sin32[x]
+    data_sin32, _ = signal.find_peaks(FreqLog, distance=1730, prominence=10)
 
     # Extraction des parametres de chaque harmonique
     axeFreq = (t3 * fe) / N
