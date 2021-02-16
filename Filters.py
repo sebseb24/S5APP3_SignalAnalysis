@@ -10,23 +10,15 @@ import SoundGenerator as soundGenerator
 import FileManager as fileManager
 
 
+# Creation du signal sinusoidale avec les parametres de chaque harmonique
 def newNote(freq, amp, rate, phase, tailles):
     taille = np.arange(tailles, dtype=float) / rate
     note = amp * np.sin(2 * np.pi * freq * taille + phase)
     return note
 
-#
-# def wave_reading():
-#     fe, data = wave.read('Sounds/note_guitare_LAd.wav')
-#     return fe, data
-#
-#
-# def wave_write(name, rate, note):
-#     scaled = np.int16(note / np.max(np.abs(note)) * 32767)
-#     wave.write(name, rate, scaled)
 
-
-def main():
+def extractionParametres():
+    # Initialisation des variables
     fe, data = fileManager.waveRead("note_guitare_LAd.wav")
     n = data.size
     N = n
@@ -44,16 +36,15 @@ def main():
     for k in range(n):
         time[k] = te * k
 
-    # fenetre de hanning pour la moustache
-    # hanning = np.hanning(N)
-    # data_hanning = data*hanning
+    # Extraction des parametres du son
     data_fft = np.fft.fft(data, N)
     data_fft_abs = np.abs(data_fft)
     data_fft_ang = np.angle(data_fft)
 
-    # concaténation des data 0 à 80 k centré a 0
+    # concaténation des donnees 0 à 80 k centré a 0
     FreqLog = 20 * np.log10(data_fft_abs[:80000])
 
+    ############### Est ce qu'on garde ca ? ###############################
     # filtre passe bas
     # ohm_bar = np.pi / 1000
     # for N1 in range(1, 885):
@@ -61,32 +52,36 @@ def main():
     #     passeBas = np.abs((1/N1)*np.sum(np.exp(-1j*(n1*ohm_bar))))
     #     print(N1, passeBas)
 
+    # Algorithme pour choisir l'ordre N du filtre RIF passe-bas
     N1 = 884  # trouver grace a la boucle for
     # n1 = np.arange(0, N1-1, 1)
     # passeBas = np.abs((1 / N1) * np.sum(np.exp(-1j * (n1 * ohm_bar))))
-    hk = []
 
+    # Creation de l'enveloppe
+    hk = []
     for temp in range(0, N1):
         hk.append(1 / N1)
 
     enveloppe = signal.fftconvolve(np.abs(data), hk)
 
-    # 32 harmonique
+    # Isolation des 32 harmoniques principales du signal
     data_sin32, _ = signal.find_peaks(FreqLog, distance=1735, prominence=17)
 
-    sin = 0
-    for x in range(0, 32):
-        sin += data_sin32[x]
+    # sin = 0
+    # for x in range(0, 32):
+    #     sin += data_sin32[x]
 
+    # Extraction des parametres de chaque harmonique
     axeFreq = (t3 * fe) / N
-
     for y in data_sin32:
         Freq_amp.append(data_fft_abs[y])
         Freq_phase.append(data_fft_ang[y])
         Freq_Harm.append(axeFreq[y])
 
+    # Confirmation de la frequence fondamentale
     Freq0 = axeFreq[data_sin32[0]]
 
+    # Construction synthetique des autres notes a partir du LA diese obtenu
     ReHarm = []
     ReDHarm = []
     MiHarm = []
@@ -134,10 +129,7 @@ def main():
     # Fonction qui permet d'enregistrer les notes individuelles dans un fichier wav
     # soundGenerator.waveWriteIndividualsNotes(fe, Re, ReD, Mi, Fa, Sol, LaD)
 
-    plt.figure()
-    # plt.plot(time[:480000], song)
-    plt.title('La Diese')
-
+    # Affichage des graphiques
     plt.figure()
     plt.plot(time, data)
     plt.ylabel('Amplitude')
@@ -153,7 +145,3 @@ def main():
     plt.title('Enveloppe filtré')
 
     plt.show()
-
-
-if __name__ == "__main__":
-    main()
